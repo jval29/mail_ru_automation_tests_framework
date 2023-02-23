@@ -1,0 +1,20 @@
+{
+  "valid": {
+    "user": "jval29_tst_001",
+    "pwd": "tstPass001",
+    "domain": "2"
+  },
+  "valid_userdomain_wrong_password_1": {
+    "user": "jval29_tst_001",
+    "pwd": "1",
+    "domain": "2"
+  },
+
+
+
+  "domain_options": {
+    "0": "mail.ru",
+    "1": "inbox.ru",
+    "2": "list.ru"
+  }
+}

@@ -1,2 +1,2 @@
 # mail_ru_automation_tests_framework
-Pet-project framework automation testting with  Selenium + Pytest
+Pet-project framework automation testing with  Selenium + Pytest

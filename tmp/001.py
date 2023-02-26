@@ -8,3 +8,16 @@ a1 = str(dic)
 print(a1)
 
 print(type(eval(a1)))
+
+
+def ff():
+    print("1-a")
+    yield
+    print("2-b")
+    yield
+
+
+f = ff()
+
+next(f)
+next(f)

@@ -28,6 +28,7 @@ def init_web_driver(request):
     elif browserName == "firefox":
         options = firefoxOptions()
         options.set_preference("intl.accept_languages", userLanguage)
+        options.binary_location = r"C:\Program Files\Mozilla Firefox\firefox.exe"
         webDriver = webdriver.Firefox(options=options)
         webDriver.implicitly_wait(2)
 
@@ -35,20 +36,23 @@ def init_web_driver(request):
 
     yield webDriver
     time.sleep(1)
-    print("\nTests are ending")
     webDriver.quit()
+    print("\nBrowser quit")
+    yield
 
 
 @pytest.fixture(scope="function")
 def webDriver(request):
-    yield next(init_web_driver(request))
-    next(init_web_driver(request))
+    init_call = init_web_driver(request)
+    yield next(init_call)
+    next(init_call)
 
 
 @pytest.fixture(scope="class")
 def webDriver_(request):
-    yield next(init_web_driver(request))
-    next(init_web_driver(request))
+    init_call = init_web_driver(request)
+    yield next(init_call)
+    next(init_call)
 
 
 

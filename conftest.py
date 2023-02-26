@@ -1,4 +1,3 @@
-
 from selenium import webdriver
 from selenium.webdriver.chrome.options import Options as chromeOptions
 from selenium.webdriver.firefox.options import Options as firefoxOptions
@@ -8,12 +7,11 @@ import pytest
 
 def pytest_addoption(parser):
     parser.addoption("--browser", action="store", default="chrome", help="choose browser name")
-    parser.addoption("--language", action="store", default="en", help="choose the language: en / ru / de ....etc")
+    parser.addoption("--language", action="store", default="ru", help="choose the language: en / ru / de ....etc")
     parser.addoption("--headless", action="store", default="off", help="turn on / off browser UI")
 
 
-@pytest.fixture(scope="class")
-def driver(request):  # collecting initial options for selenium driver(browser)
+def init_web_driver(request):
     browserName = request.config.getoption("browser").lower().strip()
     userLanguage = request.config.getoption("language").lower().strip()
     headlessOption = request.config.getoption("headless").lower().strip()
@@ -31,14 +29,26 @@ def driver(request):  # collecting initial options for selenium driver(browser)
         options = firefoxOptions()
         options.set_preference("intl.accept_languages", userLanguage)
         webDriver = webdriver.Firefox(options=options)
-        webDriver.implicitly_wait(3)
+        webDriver.implicitly_wait(2)
 
     webDriver.maximize_window()
-    yield webDriver
 
+    yield webDriver
     time.sleep(1)
-    print("\nTests ending")
+    print("\nTests are ending")
     webDriver.quit()
+
+
+@pytest.fixture(scope="function")
+def webDriver(request):
+    yield next(init_web_driver(request))
+    next(init_web_driver(request))
+
+
+@pytest.fixture(scope="class")
+def webDriver_(request):
+    yield next(init_web_driver(request))
+    next(init_web_driver(request))
 
 
 

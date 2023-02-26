@@ -1,2 +1,2 @@
-cmd /k pytest --reruns 1 --browser_name=firefox
+cmd /k pytest --reruns 1 --browser=firefox
 pause

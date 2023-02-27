@@ -42,20 +42,26 @@ class BasePage():
                 return True
             time.sleep(0.5)
 
-    def cookies_save(self, file_path=cookiesDataPath):
+    def cookies_save(self, cookies_path=cookiesDataPath, writeCookies=False):
         cookies = self.webDriver.get_cookies()
-        with open(file_path, 'wb') as fileObj:
-            pickle.dump(cookies, fileObj)
+        if not writeCookies:
+            return cookies
+        else:
+            with open(cookies_path, 'wb') as fileObj:
+                pickle.dump(cookies, fileObj)
 
-    def cookies_load(self, cookies_path=cookiesDataPath):
-        with open(cookies_path, 'rb') as fileObj:
-            cookies = pickle.load(fileObj)
+    def cookies_load(self, cookies_path=cookiesDataPath, tempCookies=None):
+        if tempCookies:
+            cookies = tempCookies
+        else:
+            with open(cookies_path, 'rb') as fileObj:
+                cookies = pickle.load(fileObj)
         for cookie in cookies:
             cookie["domain"] = ".mail.ru"
             try:
                 self.webDriver.add_cookie(cookie)
-            except Exception as currentExc:
-                print(currentExc)
+            finally:
+                continue
 
     def get_auth_data(self, option=None, path=None):
         if not option:
@@ -139,11 +145,21 @@ class BasePage():
         self.move_n_click(submitButton)
         self.webDriver.switch_to.default_content()
 
-    def login_ensure(self):
+    def login_ensure(self, retryLogin=False):
         try:
             self.should_be_authorized_user()
+            return
         except AssertionError:
-            self.log_in()
+            if retryLogin:
+                self.log_in()
+            else:
+                try:
+                    self.cookies_load()
+                    time.sleep(1)
+                    self.webDriver.refresh()
+                    self.should_be_authorized_user()
+                except Exception as currentExc:
+                    self.login_ensure(retryLogin=True)
 
     def log_off(self):
         profileButton = self.wait_element(*BasePageLocators.USER_PROFILE_BUTTON)

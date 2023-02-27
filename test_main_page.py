@@ -55,7 +55,6 @@ class TestGuestCanOpenCloseLoginFrameFromMainPage():
         assert not page.is_element_visible(*BasePageLocators.LOGIN_FRAME), \
             "Login frame is still visible"
 
-    @pytest.mark.new
     def test_guest_can_close_login_frame_with_click_out_of_frame(self, webDriver_, page):
         webDriver_.refresh()
         page.logoff_ensure()
@@ -71,6 +70,7 @@ class TestGuestCanOpenCloseLoginFrameFromMainPage():
             "Login frame is still visible"
 
 
+@pytest.mark.smoke
 @pytest.mark.usefixtures("webDriver_")
 class TestLoginLogoff():
 
@@ -110,7 +110,6 @@ class TestLoginVariants():
 @pytest.mark.usefixtures("webDriver")
 class TestCheckboxSaveAuth():
 
-    sessionID = None
     cookies = None
 
     def test_login_with_option_save_auth_checkbox_false(self, webDriver):
@@ -119,13 +118,13 @@ class TestCheckboxSaveAuth():
         page.logoff_ensure()
         page.log_in(loginOption="valid", saveAuth=False)
         page.should_be_authorized_user()
-        page.cookies_save()
+        TestCheckboxSaveAuth.cookies = page.cookies_save()
 
     @pytest.mark.xfail(reason="At the moment, the site retains authorization even if you do not tick the checkbox")
     def test_auth_not_saved(self, webDriver):
         page = MainPage(webDriver)
         page.open(MainPage.url)
-        page.cookies_load()
+        page.cookies_load(tempCookies=TestCheckboxSaveAuth.cookies)
         time.sleep(1)
         webDriver.refresh()
         page.should_not_be_authorized_user()
@@ -136,7 +135,7 @@ class TestCheckboxSaveAuth():
         page.logoff_ensure()
         page.log_in(loginOption="valid", saveAuth=True)
         page.should_be_authorized_user()
-        page.cookies_save()
+        page.cookies_save(writeCookies=True)
 
     def test_auth_is_saved(self, webDriver):
         page = MainPage(webDriver)

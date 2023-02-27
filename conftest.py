@@ -2,6 +2,7 @@ from selenium import webdriver
 from selenium.webdriver.chrome.options import Options as chromeOptions
 from selenium.webdriver.firefox.options import Options as firefoxOptions
 import time
+import winreg
 import pytest
 
 
@@ -22,13 +23,26 @@ def init_web_driver(request):
         options.add_argument("--start-maximized")
         if headlessOption == "on":
             options.add_argument("--headless")
+        try:  # search for chrome.exe path in Windows registry
+            reg_path = r"SOFTWARE\Microsoft\Windows\CurrentVersion\App Paths\chrome.exe"
+            with winreg.OpenKey(winreg.HKEY_LOCAL_MACHINE, reg_path) as key:
+                chrome_path = winreg.QueryValue(key, None)
+            options.binary_location = chrome_path
+        finally:
+            pass
         webDriver = webdriver.Chrome(options=options)
         webDriver.implicitly_wait(1)
 
     elif browserName == "firefox":
         options = firefoxOptions()
         options.set_preference("intl.accept_languages", userLanguage)
-        options.binary_location = r"C:\Program Files\Mozilla Firefox\firefox.exe"
+        try:  # search for firefox.exe path in Windows registry
+            reg_path = r"SOFTWARE\Microsoft\Windows\CurrentVersion\App Paths\firefox.exe"
+            with winreg.OpenKey(winreg.HKEY_LOCAL_MACHINE, reg_path) as key:
+                firefox_path = winreg.QueryValue(key, None)
+            options.binary_location = firefox_path
+        finally:
+            pass
         webDriver = webdriver.Firefox(options=options)
         webDriver.implicitly_wait(2)
 

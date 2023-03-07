@@ -13,7 +13,7 @@ from .locators import BasePageLocators, LoginFrameLocators
 
 
 authDataPath = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "data", "auth_data.json"))
-cookiesDataPath = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "tmp", "cookies.bin"))
+cookiesDirectory = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "tmp", "cookies"))
 
 
 class BasePage():
@@ -42,7 +42,23 @@ class BasePage():
                 return True
             time.sleep(0.5)
 
-    def cookies_save(self, cookies_path=cookiesDataPath, writeCookies=False):
+    def cookies_accept(self):
+        try:
+            cookiesAcceptButton = self.wait_element(*BasePageLocators.COOKIE_ACCEPT_BUTTON)
+            self.move_n_click(cookiesAcceptButton)
+        except TimeoutException:
+            pass
+
+    def cookies_decline(self):
+        try:
+            cookiesDeclineButton = self.wait_element(*BasePageLocators.COOKIE_DECLINE_BUTTON)
+            self.move_n_click(cookiesDeclineButton)
+        except TimeoutException:
+            pass
+
+    def cookies_save(self, cookies_path=None, writeCookies=False):
+        if not cookies_path:
+            cookies_path = os.path.abspath(os.path.join(cookiesDirectory, "cookies"))
         cookies = self.webDriver.get_cookies()
         if not writeCookies:
             return cookies
@@ -50,7 +66,9 @@ class BasePage():
             with open(cookies_path, 'wb') as fileObj:
                 pickle.dump(cookies, fileObj)
 
-    def cookies_load(self, cookies_path=cookiesDataPath, tempCookies=None):
+    def cookies_load(self, cookies_path=None, tempCookies=None):
+        if not cookies_path:
+            cookies_path = os.path.abspath(os.path.join(cookiesDirectory, "cookies"))
         if tempCookies:
             cookies = tempCookies
         else:
@@ -189,6 +207,28 @@ class BasePage():
     def open_login_frame(self):
         loginButton = self.wait_element(*BasePageLocators.LOGIN_BUTTON_HEADER)
         self.move_n_click(loginButton)
+
+    def promo_containers_action(self, action="close"):
+        try:
+            assert self.wait_element(*BasePageLocators.PROMO_CONTAINER, 1)
+            if action == "close":
+                targetButton = self.wait_element(*BasePageLocators.PROMO_CONTAINER_CLOSE_CROSS)
+            if action == "accept":
+                targetButton = self.wait_element(*BasePageLocators.PROMO_CONTAINER_ACCEPT)
+            if action == "decline":
+                targetButton = self.wait_element(*BasePageLocators.PROMO_CONTAINER_DECLINE)
+            self.move_n_click(targetButton)
+        except TimeoutException:
+            pass
+        try:
+            assert self.wait_element(*BasePageLocators.SERVICES_PROMO_CONTAINER, 1)
+            if action in ("close", "decline"):
+                targetButton = self.wait_element(*BasePageLocators.SERVICES_PROMO_CONTAINER_CLOSE_CROSS)
+            if action == "accept":
+                targetButton = self.wait_element(*BasePageLocators.SERVICES_PROMO_CONTAINER_ACCEPT)
+            self.move_n_click(targetButton)
+        except TimeoutException:
+            pass
 
     def should_be_authorized_user(self):
         assert self.is_element_present(*BasePageLocators.USER_PROFILE_BUTTON), \

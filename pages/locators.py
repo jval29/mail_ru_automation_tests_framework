@@ -8,6 +8,17 @@ class BasePageLocators():
     LOGIN_BUTTON_MAIN = (By.CSS_SELECTOR, "button[data-testid='enter-mail-primary']")
     LOGIN_BUTTON_HEADER = (By.CSS_SELECTOR, "div#ph-whiteline button.ph-login")
     LINK_HOME_HEADER = (By.CSS_SELECTOR, "div#ph-whiteline>div:first-child>div:first-child>a:first-child")
+    LINK_INBOX_HEADER = (By.CSS_SELECTOR, "div#ph-whiteline>div:first-child>div:first-child>a:nth-child(2)")
+    LINK_CLOUD_HEADER = (By.CSS_SELECTOR, "div#ph-whiteline>div:first-child>div:first-child>a:nth-child(3)")
+    COOKIE_ACCEPT_BUTTON = (By.CSS_SELECTOR, "span#cmpbntyestxt")
+    COOKIE_DECLINE_BUTTON = (By.CSS_SELECTOR, "span#cmpbntnotxt")
+    PROMO_CONTAINER = (By.CSS_SELECTOR, "*[data-test-id^='promo']")
+    PROMO_CONTAINER_CLOSE_CROSS = (By.CSS_SELECTOR, "*[data-test-id^='promo'] *[data-test-id='cross']>svg")
+    PROMO_CONTAINER_ACCEPT = (By.CSS_SELECTOR, "*[data-test-id^='promo'] *[data-test-id='submit']")
+    PROMO_CONTAINER_DECLINE = (By.CSS_SELECTOR, "*[data-test-id^='promo'] *[data-test-id='cancel']")
+    SERVICES_PROMO_CONTAINER = (By.CSS_SELECTOR, "div[class*='promo-container']")
+    SERVICES_PROMO_CONTAINER_CLOSE_CROSS = (By.CSS_SELECTOR, "div[class*='promo-container'] div[class*='promo-close-icon'] svg")
+    SERVICES_PROMO_CONTAINER_ACCEPT = (By.CSS_SELECTOR, "div[class*='promo-container'] button[class*='promo-button']")
 
 
 class LoginFrameLocators():
@@ -21,5 +32,14 @@ class LoginFrameLocators():
     CLOSE_BUTTON_CROSS = (By.CSS_SELECTOR, "div[data-test-id='cross'] svg")
 
 
+class LoginPageLocators():
+    LOGIN_FORM = (By.CSS_SELECTOR, "div[data-test-id='login-app-ready']")
+
+
 class MainPageLocators():
     pass
+
+
+class InboxPageLocators():
+    pass
+

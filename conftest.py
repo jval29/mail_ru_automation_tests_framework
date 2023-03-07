@@ -2,8 +2,11 @@ from selenium import webdriver
 from selenium.webdriver.chrome.options import Options as chromeOptions
 from selenium.webdriver.firefox.options import Options as firefoxOptions
 import time
-import winreg
 import pytest
+try:  # win / linux cases
+    import winreg
+except ModuleNotFoundError:
+    import subprocess
 
 
 def pytest_addoption(parser):
@@ -27,9 +30,10 @@ def init_web_driver(request):
             reg_path = r"SOFTWARE\Microsoft\Windows\CurrentVersion\App Paths\chrome.exe"
             with winreg.OpenKey(winreg.HKEY_LOCAL_MACHINE, reg_path) as key:
                 chrome_path = winreg.QueryValue(key, None)
-            options.binary_location = chrome_path
+        except NameError:  # linux case
+            chrome_path = "/app/bin/chrome"
         finally:
-            pass
+            options.binary_location = chrome_path
         webDriver = webdriver.Chrome(options=options)
         webDriver.implicitly_wait(1)
 
@@ -40,9 +44,10 @@ def init_web_driver(request):
             reg_path = r"SOFTWARE\Microsoft\Windows\CurrentVersion\App Paths\firefox.exe"
             with winreg.OpenKey(winreg.HKEY_LOCAL_MACHINE, reg_path) as key:
                 firefox_path = winreg.QueryValue(key, None)
-            options.binary_location = firefox_path
+        except NameError:  # linux case
+            firefox_path = subprocess.check_output(['which', 'firefox']).decode().strip()
         finally:
-            pass
+            options.binary_location = firefox_path
         webDriver = webdriver.Firefox(options=options)
         webDriver.implicitly_wait(2)
 

@@ -8,21 +8,18 @@ from selenium.common.exceptions import TimeoutException, NoSuchElementException,
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as expCond
 from .base_page import BasePage, BasePageLocators
-from .locators import MainPageLocators, LoginFrameLocators
+from .locators import LoginPageLocators
 
 
-class MainPage(BasePage):
+class LoginPage(BasePage):
 
-    url = r"https://mail.ru"
+    url = r"https://account.mail.ru/login"
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
 
-    def should_be_main_page(self):
+    def should_be_login_page(self):
         currentURL = self.webDriver.current_url
-        assert currentURL[:len(MainPage.url)] == MainPage.url, "Not a main page url"
-        homeButton = self.wait_element(*BasePageLocators.LINK_HOME_HEADER)
-        homeButtonClass = homeButton.get_attribute("class")
-        assert "ph-project_current" in homeButtonClass, "Home button is not marked as current"
+        assert currentURL[:len(LoginPage.url)] == LoginPage.url, "Not a login page url"
+        assert self.is_element_present(*LoginPageLocators.LOGIN_FORM), "Login form is not present"
         return True
-

@@ -8,21 +8,21 @@ from selenium.common.exceptions import TimeoutException, NoSuchElementException,
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as expCond
 from .base_page import BasePage, BasePageLocators
-from .locators import MainPageLocators, LoginFrameLocators
+from .locators import InboxPageLocators
 
 
-class MainPage(BasePage):
+class InboxPage(BasePage):
 
-    url = r"https://mail.ru"
+    url = r"https://e.mail.ru/inbox/"
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
 
-    def should_be_main_page(self):
+    def should_be_inbox_page(self):
         currentURL = self.webDriver.current_url
-        assert currentURL[:len(MainPage.url)] == MainPage.url, "Not a main page url"
-        homeButton = self.wait_element(*BasePageLocators.LINK_HOME_HEADER)
-        homeButtonClass = homeButton.get_attribute("class")
-        assert "ph-project_current" in homeButtonClass, "Home button is not marked as current"
+        print(currentURL)
+        assert currentURL[:len(InboxPage.url)] == InboxPage.url, "Not an inbox page url"
+        inboxButton = self.wait_element(*BasePageLocators.LINK_INBOX_HEADER)
+        inboxButtonClass = inboxButton.get_attribute("class")
+        assert "ph-project_current" in inboxButtonClass, "Inbox button is not marked as current"
         return True
-

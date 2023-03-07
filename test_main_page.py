@@ -4,6 +4,10 @@ import pytest
 
 from .pages.base_page import BasePage, BasePageLocators, LoginFrameLocators
 from .pages.main_page import MainPage, MainPageLocators
+from .pages.login_page import LoginPage, LoginPageLocators
+from .pages.inbox_page import InboxPage, InboxPageLocators
+
+tempCookies = None
 
 
 @pytest.mark.usefixtures("webDriver_")
@@ -13,6 +17,7 @@ class TestGuestCanOpenCloseLoginFrameFromMainPage():
     def page(self, webDriver_):
         page = MainPage(webDriver_)
         page.open(MainPage.url)
+        page.promo_containers_action("close")
         yield page
         webDriver_.delete_all_cookies()
         page.actChain.reset_actions()
@@ -96,6 +101,7 @@ class TestLoginVariants():
     def page(self, webDriver_):
         page = MainPage(webDriver_)
         page.open(MainPage.url)
+        page.promo_containers_action("close")
         yield page
         webDriver_.delete_all_cookies()
         page.actChain.reset_actions()
@@ -106,7 +112,6 @@ class TestLoginVariants():
         page.should_be_authorized_user()
 
 
-@pytest.mark.new
 @pytest.mark.usefixtures("webDriver")
 class TestCheckboxSaveAuth():
 
@@ -115,16 +120,18 @@ class TestCheckboxSaveAuth():
     def test_login_with_option_save_auth_checkbox_false(self, webDriver):
         page = MainPage(webDriver)
         page.open(MainPage.url)
+        page.cookies_decline()
         page.logoff_ensure()
         page.log_in(loginOption="valid", saveAuth=False)
         page.should_be_authorized_user()
-        TestCheckboxSaveAuth.cookies = page.cookies_save()
+        global tempCookies
+        tempCookies = page.cookies_save()
 
     @pytest.mark.xfail(reason="At the moment, the site retains authorization even if you do not tick the checkbox")
     def test_auth_not_saved(self, webDriver):
         page = MainPage(webDriver)
         page.open(MainPage.url)
-        page.cookies_load(tempCookies=TestCheckboxSaveAuth.cookies)
+        page.cookies_load(tempCookies=tempCookies)
         time.sleep(1)
         webDriver.refresh()
         page.should_not_be_authorized_user()
@@ -132,6 +139,7 @@ class TestCheckboxSaveAuth():
     def test_login_with_option_save_auth_checkbox_true(self, webDriver):
         page = MainPage(webDriver)
         page.open(MainPage.url)
+        page.cookies_accept()
         page.logoff_ensure()
         page.log_in(loginOption="valid", saveAuth=True)
         page.should_be_authorized_user()
@@ -144,5 +152,41 @@ class TestCheckboxSaveAuth():
         time.sleep(1)
         webDriver.refresh()
         page.should_be_authorized_user()
+
+
+@pytest.mark.new
+@pytest.mark.usefixtures("webDriver_")
+class TestGoToInboxPage():
+
+    def test_guest_can_not_go_to_inbox_page(self, webDriver_):
+        page = MainPage(webDriver_)
+        page.open(MainPage.url)
+        page.logoff_ensure()
+        page.promo_containers_action("close")
+        inboxButton = page.wait_element(*BasePageLocators.LINK_INBOX_HEADER)
+        page.move_n_click(inboxButton)
+        currentHandles = webDriver_.window_handles
+        webDriver_.switch_to.window(currentHandles[1])
+        page = LoginPage(webDriver_)
+        page.should_be_login_page()
+        webDriver_.close()
+        webDriver_.switch_to.window(currentHandles[0])
+        page = MainPage(webDriver_)
+        page.should_be_main_page()
+
+    def test_user_can_go_to_inbox_page(self, webDriver_):
+        page = MainPage(webDriver_)
+        page.open(MainPage.url)
+        page.login_ensure()
+        page.promo_containers_action("close")
+        inboxButton = page.wait_element(*BasePageLocators.LINK_INBOX_HEADER)
+        page.move_n_click(inboxButton)
+        currentHandles = webDriver_.window_handles
+        webDriver_.switch_to.window(currentHandles[-1])
+        page = InboxPage(webDriver_)
+        time.sleep(1)
+        page.should_be_inbox_page()
+
+
 
 

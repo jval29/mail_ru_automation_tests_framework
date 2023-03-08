@@ -13,16 +13,23 @@ from .locators import InboxPageLocators
 
 class InboxPage(BasePage):
 
-    url = r"https://e.mail.ru/inbox/"
+    URL = r"https://e.mail.ru/inbox/"
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
 
     def should_be_inbox_page(self):
         currentURL = self.webDriver.current_url
-        print(currentURL)
-        assert currentURL[:len(InboxPage.url)] == InboxPage.url, "Not an inbox page url"
+        assert "mail.ru/inbox" in currentURL, "Not an inbox page url"
         inboxButton = self.wait_element(*BasePageLocators.LINK_INBOX_HEADER)
         inboxButtonClass = inboxButton.get_attribute("class")
         assert "ph-project_current" in inboxButtonClass, "Inbox button is not marked as current"
+        return True
+
+    def should_not_be_inbox_page(self):
+        currentURL = self.webDriver.current_url
+        assert "mail.ru/inbox" not in currentURL, "It is inbox page url"
+        inboxButton = self.wait_element(*BasePageLocators.LINK_INBOX_HEADER)
+        inboxButtonClass = inboxButton.get_attribute("class")
+        assert "ph-project_current" not in inboxButtonClass, "Inbox button is marked as current"
         return True

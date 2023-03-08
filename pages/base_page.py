@@ -21,9 +21,9 @@ class BasePage():
     def __init__(self, webDriver: webdriver, url=None, timeout=None):
         self.webDriver = webDriver
         if url:
-            self.url = url
+            self.URL = url
         else:
-            self.url = webDriver.current_url
+            self.URL = webDriver.current_url
         if timeout:
             self.webDriver.implicitly_wait(timeout)
         if isinstance(webDriver, webdriver.Firefox):
@@ -163,12 +163,12 @@ class BasePage():
         self.move_n_click(submitButton)
         self.webDriver.switch_to.default_content()
 
-    def login_ensure(self, retryLogin=False):
+    def login_ensure(self, cookiesLogin=True):
         try:
             self.should_be_authorized_user()
             return
         except AssertionError:
-            if retryLogin:
+            if not cookiesLogin:
                 self.log_in()
             else:
                 try:
@@ -176,8 +176,8 @@ class BasePage():
                     time.sleep(1)
                     self.webDriver.refresh()
                     self.should_be_authorized_user()
-                except Exception as currentExc:
-                    self.login_ensure(retryLogin=True)
+                except (FileNotFoundError, AssertionError):
+                    self.login_ensure(cookiesLogin=False)
 
     def log_off(self):
         profileButton = self.wait_element(*BasePageLocators.USER_PROFILE_BUTTON)
@@ -201,7 +201,7 @@ class BasePage():
 
     def open(self, url=None):
         if not url:
-            url = self.url
+            url = self.URL
         self.webDriver.get(url)
 
     def open_login_frame(self):

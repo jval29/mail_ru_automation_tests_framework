@@ -49,7 +49,7 @@ def init_web_driver(request):
         finally:
             options.binary_location = firefox_path
         webDriver = webdriver.Firefox(options=options)
-        webDriver.implicitly_wait(2)
+        webDriver.implicitly_wait(1)
 
     webDriver.maximize_window()
 
@@ -60,14 +60,14 @@ def init_web_driver(request):
     yield
 
 
-@pytest.fixture(scope="function")
+@pytest.fixture(scope="function", autouse=False)
 def webDriver(request):
     init_call = init_web_driver(request)
     yield next(init_call)
     next(init_call)
 
 
-@pytest.fixture(scope="class")
+@pytest.fixture(scope="class", autouse=False)
 def webDriver_(request):
     init_call = init_web_driver(request)
     yield next(init_call)

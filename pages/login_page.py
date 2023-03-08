@@ -13,13 +13,13 @@ from .locators import LoginPageLocators
 
 class LoginPage(BasePage):
 
-    url = r"https://account.mail.ru/login"
+    URL = r"https://account.mail.ru/login"
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
 
     def should_be_login_page(self):
         currentURL = self.webDriver.current_url
-        assert currentURL[:len(LoginPage.url)] == LoginPage.url, "Not a login page url"
+        assert currentURL[:len(LoginPage.URL)] == LoginPage.URL, "Not a login page url"
         assert self.is_element_present(*LoginPageLocators.LOGIN_FORM), "Login form is not present"
         return True

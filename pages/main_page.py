@@ -13,14 +13,14 @@ from .locators import MainPageLocators, LoginFrameLocators
 
 class MainPage(BasePage):
 
-    url = r"https://mail.ru"
+    URL = r"https://mail.ru"
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
 
     def should_be_main_page(self):
         currentURL = self.webDriver.current_url
-        assert currentURL[:len(MainPage.url)] == MainPage.url, "Not a main page url"
+        assert currentURL[:len(MainPage.URL)] == MainPage.URL, "Not a main page url"
         homeButton = self.wait_element(*BasePageLocators.LINK_HOME_HEADER)
         homeButtonClass = homeButton.get_attribute("class")
         assert "ph-project_current" in homeButtonClass, "Home button is not marked as current"

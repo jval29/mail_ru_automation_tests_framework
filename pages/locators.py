@@ -19,6 +19,7 @@ class BasePageLocators():
     SERVICES_PROMO_CONTAINER = (By.CSS_SELECTOR, "div[class*='promo-container']")
     SERVICES_PROMO_CONTAINER_CLOSE_CROSS = (By.CSS_SELECTOR, "div[class*='promo-container'] div[class*='promo-close-icon'] svg")
     SERVICES_PROMO_CONTAINER_ACCEPT = (By.CSS_SELECTOR, "div[class*='promo-container'] button[class*='promo-button']")
+    UNREAD_EMAIL_COUNTER_HEADER = (By.CSS_SELECTOR, "div#ph-whiteline a:nth-child(2)  span.ph-notify")
 
 
 class LoginFrameLocators():
@@ -41,5 +42,9 @@ class MainPageLocators():
 
 
 class InboxPageLocators():
-    pass
+    UNREAD_EMAIL_MARK = (By.CSS_SELECTOR, "a span.ll-rs_is-active")
+    LINK_EMAIL_ORDINARY = (By.CSS_SELECTOR, "div#app-canvas div.letter-list a.llc")
+    EMAIL_SUBJECT_BRIEF = (By.CSS_SELECTOR, "div#app-canvas div.letter-list a.llc span.llc__subject div span")
+
+    EMAIL_SUBJECT_H2 = (By.CSS_SELECTOR, "div.thread__header h2")
 

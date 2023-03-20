@@ -1,21 +1,20 @@
 {
-  "valid": {
-    "user": "jval29_tst_001",
-    "pwd": "tstPass001",
-    "domain": "3"
-  },
-  "valid_userdomain_wrong_password_1": {
-    "user": "jval29_tst_001",
-    "pwd": "1",
-    "domain": "3"
-  },
-
-
-
   "domain_options": {
     "0": "mail.ru",
     "1": "inbox.ru",
     "2": "bk.ru",
     "3": "list.ru"
+  },
+
+  "valid": {
+    "user": "jval29_tst_002",
+    "pwd": "tstPass002",
+    "domain": "3"
+  },
+  "user_valid_domain_valid_pwd_wrong_format_1": {
+    "user": "jval29_tst_002",
+    "pwd": "1",
+    "domain": "3"
   }
+
 }

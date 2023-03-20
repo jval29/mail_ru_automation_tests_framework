@@ -154,7 +154,6 @@ class TestCheckboxSaveAuth():
         page.should_be_authorized_user()
 
 
-@pytest.mark.new
 @pytest.mark.usefixtures("webDriver")
 class TestGoToInboxPage():
 

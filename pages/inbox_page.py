@@ -33,3 +33,13 @@ class InboxPage(BasePage):
         inboxButtonClass = inboxButton.get_attribute("class")
         assert "ph-project_current" not in inboxButtonClass, "Inbox button is marked as current"
         return True
+
+    def unread_emails_should_be_equal_to_counter(self, counterValue: int = None):
+        if not counterValue:
+            counter = self.wait_element(*BasePageLocators.UNREAD_EMAIL_COUNTER_HEADER)
+            counterValue = int(counter.text.strip())
+        unreadEmails = self.wait_elements(*InboxPageLocators.UNREAD_EMAIL_MARK)
+        assert counterValue == len(unreadEmails),\
+            f"Unread emails quantity ({len(unreadEmails)}) is not equal to counter ({counterValue})"
+        return True
+

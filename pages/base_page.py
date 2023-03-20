@@ -177,7 +177,7 @@ class BasePage():
                     self.webDriver.refresh()
                     self.should_be_authorized_user()
                 except (FileNotFoundError, AssertionError):
-                    self.login_ensure(cookiesLogin=False)
+                    self.log_in()
 
     def log_off(self):
         profileButton = self.wait_element(*BasePageLocators.USER_PROFILE_BUTTON)

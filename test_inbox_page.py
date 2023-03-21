@@ -44,16 +44,42 @@ class TestOpenCloseEmails():
         webDriver_.delete_all_cookies()
         page.actChain.reset_actions()
 
-    def test_open_first_email(self, webDriver_, page):
+    def test_can_open_first_email(self, webDriver_, page):
         page.login_ensure()
         page.open(InboxPage.URL)
         page.should_be_inbox_page()
         emailLink = page.wait_element(*InboxPageLocators.LINK_EMAIL_ORDINARY)
         emailSubject = page.wait_element(*InboxPageLocators.EMAIL_SUBJECT_BRIEF).text
         page.move_n_click(emailLink)
-        assert page.is_element_present(*InboxPageLocators.EMAIL_SUBJECT_H2), \
-            "There is no email topic in header, probably email is not opened"
-        emailHeader = page.wait_element(*InboxPageLocators.EMAIL_SUBJECT_H2).text
+        time.sleep(1)
+        page.should_be_opened_email()
+        emailHeader = page.wait_element(*InboxPageLocators.OPENED_EMAIL_SUBJECT_H2).text
         assert emailSubject == emailHeader, \
-            f"Email subject in description is '{emailSubject}' but email header is '{emailHeader}'"
+            f"Email subject in description is '{emailSubject}', but email header is '{emailHeader}'"
+
+    def test_can_close_email_with_escape_key(self, webDriver_, page):
+        page.should_be_opened_email()
+        page.actChain.key_down(page.keyTable.ESCAPE).pause(0.1).key_up(page.keyTable.ESCAPE).perform()
+        assert page.is_element_disappeared(*InboxPageLocators.OPENED_EMAIL_SUBJECT_H2, 1), \
+            "There is email topic in header, probably email is still open"
+
+    def test_can_open_second_email(self, webDriver_, page):
+        page.login_ensure()
+        page.open(InboxPage.URL)
+        page.should_be_inbox_page()
+        emailLink = page.wait_elements(*InboxPageLocators.LINK_EMAIL_ORDINARY)[1]
+        emailSubject = page.wait_elements(*InboxPageLocators.EMAIL_SUBJECT_BRIEF)[1].text
+        page.move_n_click(emailLink)
+        time.sleep(1)
+        page.should_be_opened_email()
+        emailHeader = page.wait_element(*InboxPageLocators.OPENED_EMAIL_SUBJECT_H2).text
+        assert emailSubject == emailHeader, \
+            f"Email subject in description is '{emailSubject}', but email header is '{emailHeader}'"
+
+    def test_close_email_with_back_button(self, webDriver_, page):
+        page.should_be_opened_email()
+        backButton = page.wait_element(*InboxPageLocators.OPENED_EMAIL_BACK_BUTTON)
+        page.move_n_click(backButton)
+        assert page.is_element_disappeared(*InboxPageLocators.OPENED_EMAIL_SUBJECT_H2, 1), \
+            "There is email topic in header, probably email is still open"
 

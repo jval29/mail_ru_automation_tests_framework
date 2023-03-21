@@ -34,6 +34,11 @@ class InboxPage(BasePage):
         assert "ph-project_current" not in inboxButtonClass, "Inbox button is marked as current"
         return True
 
+    def should_be_opened_email(self):
+        assert self.is_element_present(*InboxPageLocators.OPENED_EMAIL_SUBJECT_H2), \
+            "There is no email topic in header, probably email is not opened"
+        return True
+
     def unread_emails_should_be_equal_to_counter(self, counterValue: int = None):
         if not counterValue:
             counter = self.wait_element(*BasePageLocators.UNREAD_EMAIL_COUNTER_HEADER)

@@ -13,10 +13,11 @@ class TestCompareEmailsWithCounters():
     @pytest.fixture(scope="class", autouse=True)
     def page(self, webDriver_):
         page = BasePage(webDriver_)
-        page.open(InboxPage.URL)
+        page.open(page.mainURL)
         page.log_in(saveAuth=True)
-        page = InboxPage(webDriver_)
         page.cookies_save(writeCookies=True)
+        page = InboxPage(webDriver_)
+        page.open(InboxPage.URL)
         page.promo_containers_action("close")
         yield page
         webDriver_.delete_all_cookies()
@@ -28,6 +29,14 @@ class TestCompareEmailsWithCounters():
         page.should_be_inbox_page()
         page.unread_emails_should_be_equal_to_counter()
 
+    def test_unread_emails_quantity_is_equal_to_counter_in_left_sidebar(self, webDriver_, page):
+        page.login_ensure()
+        page.open(InboxPage.URL)
+        page.should_be_inbox_page()
+        counterSidebar = page.wait_element(*InboxPageLocators.UNREAD_EMAIL_COUNTER_SIDEBAR)
+        counterValue = int(counterSidebar.text)
+        page.unread_emails_should_be_equal_to_counter(counterValue)
+
 
 @pytest.mark.new
 @pytest.mark.usefixtures("webDriver_")
@@ -36,9 +45,10 @@ class TestOpenCloseEmails():
     @pytest.fixture(scope="class", autouse=True)
     def page(self, webDriver_):
         page = BasePage(webDriver_)
-        page.open(InboxPage.URL)
+        page.open(page.mainURL)
         page.login_ensure()
         page = InboxPage(webDriver_)
+        page.open(InboxPage.URL)
         page.promo_containers_action("close")
         yield page
         webDriver_.delete_all_cookies()

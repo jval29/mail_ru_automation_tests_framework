@@ -3,10 +3,15 @@ from selenium.webdriver.chrome.options import Options as chromeOptions
 from selenium.webdriver.firefox.options import Options as firefoxOptions
 import time
 import pytest
+from loguru import logger
 try:  # win / linux cases
     import winreg
 except ModuleNotFoundError:
     import subprocess
+
+
+logger.add(r"./tmp/logs/pytest_log.log", format="{time} {level} {message}", level="DEBUG",
+           rotation="5 MB", compression="zip")
 
 
 def pytest_addoption(parser):

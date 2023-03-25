@@ -18,12 +18,15 @@ cookiesDirectory = os.path.abspath(os.path.join(os.path.dirname(__file__), "..",
 
 class BasePage():
 
+    mainURL = r"https://mail.ru"
+
     def __init__(self, webDriver: webdriver, url=None, timeout=None):
         self.webDriver = webDriver
         if url:
             self.URL = url
         else:
             self.URL = webDriver.current_url
+        self.mainURL = BasePage.mainURL
         if timeout:
             self.webDriver.implicitly_wait(timeout)
         if isinstance(webDriver, webdriver.Firefox):

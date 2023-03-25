@@ -15,3 +15,5 @@ with winreg.OpenKey(winreg.HKEY_LOCAL_MACHINE, reg_path) as key:
 
 print(chrome_path)
 
+input()
+

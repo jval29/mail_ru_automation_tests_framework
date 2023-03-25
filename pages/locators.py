@@ -45,6 +45,7 @@ class InboxPageLocators():
     UNREAD_EMAIL_MARK = (By.CSS_SELECTOR, "a span.ll-rs_is-active")
     LINK_EMAIL_ORDINARY = (By.CSS_SELECTOR, "div#app-canvas div.letter-list a.llc")
     EMAIL_SUBJECT_BRIEF = (By.CSS_SELECTOR, "div#app-canvas div.letter-list a.llc span.llc__subject div span")
+    UNREAD_EMAIL_COUNTER_SIDEBAR = (By.CSS_SELECTOR, "div#sideBarContent a[data-folder-link-id='0'] span.badge__text")
 
     OPENED_EMAIL_SUBJECT_H2 = (By.CSS_SELECTOR, "div.thread__header h2")
     OPENED_EMAIL_BACK_BUTTON = (By.CSS_SELECTOR, "div.portal-menu-logo div.portal-menu-element_back")

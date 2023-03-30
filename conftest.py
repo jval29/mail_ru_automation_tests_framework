@@ -11,14 +11,45 @@ try:  # win / linux cases
 except ModuleNotFoundError:
     import subprocess
 
+testsResults = []
+timeStamp = ""
+WD = webdriver
+
 
 def pytest_configure():
-    global testLog, timeStamp
+    global timeStamp, testsResults
     timeStamp = datetime.datetime.now().strftime('%Y-%m-%d_%H-%M-%S')
-    testLog = open(r"tmp/logs/test_log.log", "a")
-    testLog.write(fr"<<<{timeStamp}>>>"+"\n")
-    sys.stderr = testLog
-    sys.stdout = testLog
+
+
+def pytest_sessionstart(session):
+    session.results = dict()
+
+
+@pytest.hookimpl(tryfirst=False, hookwrapper=True)
+def pytest_runtest_makereport(item):
+    outcome = yield
+    result = outcome.get_result()
+    if result.when == 'call':
+        item.session.results[item] = result
+
+
+@pytest.hookimpl(tryfirst=True, hookwrapper=True)
+def pytest_runtest_makereport(item, call):
+    global testsResults
+    outcome = yield
+    result = outcome.get_result()
+    if result.outcome == "failed":
+        exception = call.excinfo.value
+        exception_class = call.excinfo.type
+        exception_class_name = call.excinfo.typename
+        exception_type_and_message_formatted = call.excinfo.exconly()
+        exception_traceback = call.excinfo.traceback
+        testsResults.append([item, exception, exception_class, exception_class_name,
+                             exception_type_and_message_formatted, exception_traceback])
+
+
+def pytest_sessionfinish(session):
+    pass
 
 
 def pytest_unconfigure():
@@ -27,17 +58,12 @@ def pytest_unconfigure():
                   fr"./tmp/logs/report_{timeStamp}.html")
     except FileNotFoundError:
         print("No report file to rename")
-    testLog.close()
-    sys.stderr = sys.__stderr__
-    sys.stdout = sys.__stdout__
-    with open(r"tmp/logs/test_log.log", "r") as logFile:
-        logText = logFile.readlines()
-    foundTimestamp = False
-    for currentLine in logText:
-        if foundTimestamp:
-            print(currentLine)
-        if f"<<<{timeStamp}>>>" in currentLine:
-            foundTimestamp = True
+    global testsResults
+    with open("tmp/logs/tests_error_log.log", "a") as logFile:
+        for result in testsResults:
+            logFile.write(f"\n\n<<<{timeStamp}>>>\n{result[0]}\n{result[4]}")
+            for traceBack in result[5]:
+                logFile.write(f"\n{traceBack}")
 
 
 def pytest_addoption(parser):
@@ -103,4 +129,3 @@ def webDriver_(request):
     init_call = init_web_driver(request)
     yield next(init_call)
     next(init_call)
-

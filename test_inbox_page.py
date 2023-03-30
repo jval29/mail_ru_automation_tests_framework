@@ -27,12 +27,14 @@ class TestCompareEmailsWithCounters():
         page.login_ensure()
         page.open(InboxPage.URL)
         page.should_be_inbox_page()
+        page.check_document_state(3)
         page.unread_emails_should_be_equal_to_counter()
 
     def test_unread_emails_quantity_is_equal_to_counter_in_left_sidebar(self, webDriver_, page):
         page.login_ensure()
         page.open(InboxPage.URL)
         page.should_be_inbox_page()
+        page.check_document_state(3)
         counterSidebar = page.wait_element(*InboxPageLocators.UNREAD_EMAIL_COUNTER_SIDEBAR)
         counterValue = int(counterSidebar.text)
         page.unread_emails_should_be_equal_to_counter(counterValue)

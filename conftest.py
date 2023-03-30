@@ -1,17 +1,43 @@
 from selenium import webdriver
 from selenium.webdriver.chrome.options import Options as chromeOptions
 from selenium.webdriver.firefox.options import Options as firefoxOptions
+import sys
+import os
 import time
+import datetime
 import pytest
-from loguru import logger
 try:  # win / linux cases
     import winreg
 except ModuleNotFoundError:
     import subprocess
 
 
-logger.add(r"./tmp/logs/pytest_log.log", format="{time} {level} {message}", level="DEBUG",
-           rotation="5 MB", compression="zip")
+def pytest_configure():
+    global testLog, timeStamp
+    timeStamp = datetime.datetime.now().strftime('%Y-%m-%d_%H-%M-%S')
+    testLog = open(r"tmp/logs/test_log.log", "a")
+    testLog.write(fr"<<<{timeStamp}>>>"+"\n")
+    sys.stderr = testLog
+    sys.stdout = testLog
+
+
+def pytest_unconfigure():
+    try:
+        os.rename("./tmp/logs/report.html",
+                  fr"./tmp/logs/report_{timeStamp}.html")
+    except FileNotFoundError:
+        print("No report file to rename")
+    testLog.close()
+    sys.stderr = sys.__stderr__
+    sys.stdout = sys.__stdout__
+    with open(r"tmp/logs/test_log.log", "r") as logFile:
+        logText = logFile.readlines()
+    foundTimestamp = False
+    for currentLine in logText:
+        if foundTimestamp:
+            print(currentLine)
+        if f"<<<{timeStamp}>>>" in currentLine:
+            foundTimestamp = True
 
 
 def pytest_addoption(parser):
@@ -57,8 +83,8 @@ def init_web_driver(request):
         webDriver.implicitly_wait(1)
 
     webDriver.maximize_window()
-
     yield webDriver
+
     time.sleep(1)
     webDriver.quit()
     print("\nBrowser quit")
@@ -77,6 +103,4 @@ def webDriver_(request):
     init_call = init_web_driver(request)
     yield next(init_call)
     next(init_call)
-
-
 

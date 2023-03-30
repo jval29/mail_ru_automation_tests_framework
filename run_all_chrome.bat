@@ -1,2 +1,2 @@
-cmd /k pytest --reruns 1 --browser=chrome
+cmd /k pytest --browser=chrome
 pause
